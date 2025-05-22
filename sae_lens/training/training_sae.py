@@ -258,6 +258,12 @@ class TrainingSAE(SAE):
             self.log_threshold.data = torch.ones(
                 self.cfg.d_sae, dtype=self.dtype, device=self.device
             ) * np.log(cfg.jumprelu_init_threshold)
+        elif cfg.architecture == "context_likelihood":
+            self.encode_with_hidden_pre_fn = self.encode_with_hidden_pre_context_likelihood
+            self.bandwidth = cfg.jumprelu_bandwidth
+            self.log_threshold.data = torch.ones(
+                self.cfg.d_sae, dtype=self.dtype, device=self.device
+            ) * np.log(cfg.jumprelu_init_threshold)
 
         else:
             raise ValueError(f"Unknown architecture: {cfg.architecture}")
@@ -281,9 +287,16 @@ class TrainingSAE(SAE):
         )
         self.initialize_weights_basic()
 
+    def initialize_weights_context_likelihood(self):
+        # same as the superclass, except we use a log_threshold parameter instead of threshold
+        self.log_threshold = nn.Parameter(
+            torch.empty(self.cfg.d_sae, dtype=self.dtype, device=self.device)
+        )
+        self.initialize_weights_basic()
+
     @property
     def threshold(self) -> torch.Tensor:
-        if self.cfg.architecture != "jumprelu":
+        if self.cfg.architecture != "jumprelu" and self.cfg.architecture != "context_likelihood":
             raise ValueError("Threshold is only defined for Jumprelu SAEs")
         return torch.exp(self.log_threshold)
 
@@ -323,6 +336,25 @@ class TrainingSAE(SAE):
         feature_acts = JumpReLU.apply(hidden_pre, threshold, self.bandwidth)
 
         return feature_acts, hidden_pre  # type: ignore
+
+    def encode_with_hidden_pre_context_likelihood(
+        self, x: Float[torch.Tensor, "... d_in"]
+    ) -> tuple[Float[torch.Tensor, "... d_sae"], Float[torch.Tensor, "... d_sae"]]:
+        sae_in = self.process_sae_in(x)
+
+        hidden_pre = sae_in @ self.W_enc + self.b_enc
+
+        if self.training:
+            hidden_pre = (
+                hidden_pre + torch.randn_like(hidden_pre) * self.cfg.noise_scale
+            )
+
+        threshold = torch.exp(self.log_threshold)
+
+        feature_acts = JumpReLU.apply(hidden_pre, threshold, self.bandwidth)
+
+        return feature_acts, hidden_pre
+
 
     def encode_with_hidden_pre(
         self, x: Float[torch.Tensor, "... d_in"]
@@ -553,13 +585,13 @@ class TrainingSAE(SAE):
         return standard_mse_loss_fn
 
     def process_state_dict_for_saving(self, state_dict: dict[str, Any]) -> None:
-        if self.cfg.architecture == "jumprelu" and "log_threshold" in state_dict:
+        if self.cfg.architecture in ["jumprelu", "context_likelihood"] and "log_threshold" in state_dict:
             threshold = torch.exp(state_dict["log_threshold"]).detach().contiguous()
             del state_dict["log_threshold"]
             state_dict["threshold"] = threshold
 
     def process_state_dict_for_loading(self, state_dict: dict[str, Any]) -> None:
-        if self.cfg.architecture == "jumprelu" and "threshold" in state_dict:
+        if self.cfg.architecture in ["jumprelu", "context_likelihood"] and "threshold" in state_dict:
             threshold = state_dict["threshold"]
             del state_dict["threshold"]
             state_dict["log_threshold"] = torch.log(threshold).detach().contiguous()
@@ -628,6 +660,11 @@ class TrainingSAE(SAE):
     def fold_W_dec_norm(self):
         # need to deal with the jumprelu having a log_threshold in training
         if self.cfg.architecture == "jumprelu":
+            cur_threshold = self.threshold.clone()
+            W_dec_norms = self.W_dec.norm(dim=-1).unsqueeze(1)
+            super().fold_W_dec_norm()
+            self.log_threshold.data = torch.log(cur_threshold * W_dec_norms.squeeze())
+        elif self.cfg.architecture == "context_likelihood":
             cur_threshold = self.threshold.clone()
             W_dec_norms = self.W_dec.norm(dim=-1).unsqueeze(1)
             super().fold_W_dec_norm()
