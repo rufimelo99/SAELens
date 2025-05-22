@@ -481,7 +481,6 @@ class TrainingSAE(SAE):
             l0 = torch.sum(Step.apply(hidden_pre, threshold, self.bandwidth), dim=-1)  # type: ignore
             l0_loss = (current_l1_coefficient * l0).mean()
             loss = mse_loss + l0_loss + self.fisher_reg_term
-            breakpoint()
             losses["l0_loss"] = l0_loss
             losses["fisher_reg_term"] = self.fisher_reg_term
         else:
