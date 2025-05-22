@@ -121,6 +121,7 @@ class TrainingSAEConfig(SAEConfig):
     decoder_heuristic_init_norm: float
     init_encoder_as_decoder_transpose: bool
     scale_sparsity_penalty_by_decoder_norm: bool
+    contex_likelihood_fisher_lambda_term: float 
 
     @classmethod
     def from_sae_runner_config(
@@ -163,6 +164,7 @@ class TrainingSAEConfig(SAEConfig):
             model_from_pretrained_kwargs=cfg.model_from_pretrained_kwargs or {},
             jumprelu_init_threshold=cfg.jumprelu_init_threshold,
             jumprelu_bandwidth=cfg.jumprelu_bandwidth,
+            contex_likelihood_fisher_lambda_term=cfg.contex_likelihood_fisher_lambda_term,
         )
 
     @classmethod
@@ -340,20 +342,37 @@ class TrainingSAE(SAE):
     def encode_with_hidden_pre_context_likelihood(
         self, x: Float[torch.Tensor, "... d_in"]
     ) -> tuple[Float[torch.Tensor, "... d_sae"], Float[torch.Tensor, "... d_sae"]]:
-        sae_in = self.process_sae_in(x)
-
-        hidden_pre = sae_in @ self.W_enc + self.b_enc
+        sae_in : Float[torch.Tensor, "... d_in"]  = self.process_sae_in(x)
+        hidden_pre : Float[torch.Tensor, "... d_sae"]  = sae_in @ self.W_enc + self.b_enc
 
         if self.training:
             hidden_pre = (
                 hidden_pre + torch.randn_like(hidden_pre) * self.cfg.noise_scale
             )
 
-        threshold = torch.exp(self.log_threshold)
+            # --- Fisher Regularization ---
+            pseudo_loss = torch.sum(hidden_pre**2)
+            grads = torch.autograd.grad(
+                pseudo_loss,
+                hidden_pre,
+                create_graph=True,
+                retain_graph=True
+            )[0]
+            F_empirical = torch.einsum("bi,bj->ij", grads, grads) / grads.shape[0]
 
+            # Regularization option (e.g., off-diagonal penalty)
+            off_diag = F_empirical - torch.diag(torch.diag(F_empirical))
+            lambda_term = self.cfg.contex_likelihood_fisher_lambda_term
+            fisher_reg = lambda_term * torch.sum(off_diag**2)
+
+            self.fisher_reg_term = fisher_reg
+
+
+        threshold = torch.exp(self.log_threshold)
         feature_acts = JumpReLU.apply(hidden_pre, threshold, self.bandwidth)
 
         return feature_acts, hidden_pre
+
 
 
     def encode_with_hidden_pre(
@@ -457,6 +476,13 @@ class TrainingSAE(SAE):
             )
             losses["auxiliary_reconstruction_loss"] = topk_loss
             loss = mse_loss + topk_loss
+        elif self.cfg.architecture == "context_likelihood":
+            threshold = torch.exp(self.log_threshold)
+            l0 = torch.sum(Step.apply(hidden_pre, threshold, self.bandwidth), dim=-1)  # type: ignore
+            l0_loss = (current_l1_coefficient * l0).mean()
+            loss = mse_loss + l0_loss + self.fisher_reg_term
+            losses["l0_loss"] = l0_loss
+            losses["fisher_reg_term"] = self.fisher_reg_term
         else:
             # default SAE sparsity loss
             weighted_feature_acts = feature_acts
