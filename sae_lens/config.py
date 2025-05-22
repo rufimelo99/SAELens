@@ -199,7 +199,7 @@ class LanguageModelSAERunnerConfig:
     jumprelu_bandwidth: float = 0.001
 
     # Likelihood Context
-    contex_likelihood_fisher_lambda_term: float = 1e-4
+    singular_fisher_fisher_lambda_term: float = 1e-4
 
     # Performance - see compilation section of lm_runner.py for info
     autocast: bool = False  # autocast to autocast_dtype during training
@@ -480,7 +480,7 @@ class LanguageModelSAERunnerConfig:
             "jumprelu_init_threshold": self.jumprelu_init_threshold,
             "jumprelu_bandwidth": self.jumprelu_bandwidth,
             "scale_sparsity_penalty_by_decoder_norm": self.scale_sparsity_penalty_by_decoder_norm,
-            "contex_likelihood_fisher_lambda_term": self.contex_likelihood_fisher_lambda_term,
+            "singular_fisher_fisher_lambda_term": self.singular_fisher_fisher_lambda_term,
         }
 
     def to_dict(self) -> dict[str, Any]:

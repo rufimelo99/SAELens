@@ -44,7 +44,7 @@ T = TypeVar("T", bound="SAE")
 @dataclass
 class SAEConfig:
     # architecture details
-    architecture: Literal["standard", "gated", "jumprelu", "topk", "context_likelihood"]
+    architecture: Literal["standard", "gated", "jumprelu", "topk", "singular_fisher"]
 
     # forward pass details.
     d_in: int
@@ -172,9 +172,9 @@ class SAE(HookedRootModule):
         elif self.cfg.architecture == "jumprelu":
             self.initialize_weights_jumprelu()
             self.encode = self.encode_jumprelu
-        elif self.cfg.architecture == "context_likelihood":
-            self.initialize_weights_context_likelihood()
-            self.encode = self.encode_context_likelihood
+        elif self.cfg.architecture == "singular_fisher":
+            self.initialize_weights_singular_fisher()
+            self.encode = self.encode_singular_fisher
         else:
             raise ValueError(f"Invalid architecture: {self.cfg.architecture}")
 
@@ -324,7 +324,7 @@ class SAE(HookedRootModule):
         )
         self.initialize_weights_basic()
 
-    def initialize_weights_context_likelihood(self):
+    def initialize_weights_singular_fisher(self):
         # The params are identical to the standard SAE
         # except we use a threshold parameter too
         self.threshold = nn.Parameter(
@@ -453,7 +453,7 @@ class SAE(HookedRootModule):
         return self.hook_sae_acts_post(self.activation_fn(hidden_pre))
 
 
-    def encode_context_likelihood(
+    def encode_singular_fisher(
         self, x: Float[torch.Tensor, "... d_in"]
     ) -> Float[torch.Tensor, "... d_sae"]:
         """
@@ -505,7 +505,7 @@ class SAE(HookedRootModule):
         elif self.cfg.architecture == "jumprelu":
             self.threshold.data = self.threshold.data * W_dec_norms.squeeze()
             self.b_enc.data = self.b_enc.data * W_dec_norms.squeeze()
-        elif self.cfg.architecture == "context_likelihood":
+        elif self.cfg.architecture == "singular_fisher":
             self.threshold.data = self.threshold.data * W_dec_norms.squeeze()
             self.b_enc.data = self.b_enc.data * W_dec_norms.squeeze()
         else:
