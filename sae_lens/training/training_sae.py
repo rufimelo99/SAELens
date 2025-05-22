@@ -686,12 +686,7 @@ class TrainingSAE(SAE):
     @torch.no_grad()
     def fold_W_dec_norm(self):
         # need to deal with the jumprelu having a log_threshold in training
-        if self.cfg.architecture == "jumprelu":
-            cur_threshold = self.threshold.clone()
-            W_dec_norms = self.W_dec.norm(dim=-1).unsqueeze(1)
-            super().fold_W_dec_norm()
-            self.log_threshold.data = torch.log(cur_threshold * W_dec_norms.squeeze())
-        elif self.cfg.architecture == "singular_fisher":
+        if self.cfg.architecture == "jumprelu" or self.cfg.architecture == "singular_fisher":
             cur_threshold = self.threshold.clone()
             W_dec_norms = self.W_dec.norm(dim=-1).unsqueeze(1)
             super().fold_W_dec_norm()
