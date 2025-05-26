@@ -435,7 +435,6 @@ class TrainingSAE(SAE):
         # hidden pre.
         feature_acts, hidden_pre = self.encode_with_hidden_pre_fn(sae_in)
         if self.cfg.use_fisher:
-            logger.warning("Calculating Fisher regularization term for standard SAE")
             self.fisher_reg_term = self.get_fisher_reg_term(feature_acts)
         sae_out = self.decode(feature_acts)
 
