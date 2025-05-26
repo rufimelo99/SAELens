@@ -121,7 +121,8 @@ class TrainingSAEConfig(SAEConfig):
     decoder_heuristic_init_norm: float
     init_encoder_as_decoder_transpose: bool
     scale_sparsity_penalty_by_decoder_norm: bool
-    singular_fisher_fisher_lambda_term: float 
+    fisher_lambda_term: float 
+    use_fisher: bool = False
 
     @classmethod
     def from_sae_runner_config(
@@ -164,7 +165,8 @@ class TrainingSAEConfig(SAEConfig):
             model_from_pretrained_kwargs=cfg.model_from_pretrained_kwargs or {},
             jumprelu_init_threshold=cfg.jumprelu_init_threshold,
             jumprelu_bandwidth=cfg.jumprelu_bandwidth,
-            singular_fisher_fisher_lambda_term=cfg.singular_fisher_fisher_lambda_term,
+            fisher_lambda_term=cfg.fisher_lambda_term,
+            use_fisher=cfg.use_fisher,
         )
 
     @classmethod
@@ -206,6 +208,8 @@ class TrainingSAEConfig(SAEConfig):
             "normalize_activations": self.normalize_activations,
             "jumprelu_init_threshold": self.jumprelu_init_threshold,
             "jumprelu_bandwidth": self.jumprelu_bandwidth,
+            "fisher_lambda_term": self.fisher_lambda_term,
+            "use_fisher": self.use_fisher,
         }
 
     # this needs to exist so we can initialize the parent sae cfg without the training specific
@@ -260,12 +264,12 @@ class TrainingSAE(SAE):
             self.log_threshold.data = torch.ones(
                 self.cfg.d_sae, dtype=self.dtype, device=self.device
             ) * np.log(cfg.jumprelu_init_threshold)
-        elif cfg.architecture == "singular_fisher":
-            self.encode_with_hidden_pre_fn = self.encode_with_hidden_pre_singular_fisher
-            self.bandwidth = cfg.jumprelu_bandwidth
-            self.log_threshold.data = torch.ones(
-                self.cfg.d_sae, dtype=self.dtype, device=self.device
-            ) * np.log(cfg.jumprelu_init_threshold)
+        # elif cfg.architecture == "singular_fisher":
+        #     self.encode_with_hidden_pre_fn = self.encode_with_hidden_pre_singular_fisher
+        #     self.bandwidth = cfg.jumprelu_bandwidth
+        #     self.log_threshold.data = torch.ones(
+        #         self.cfg.d_sae, dtype=self.dtype, device=self.device
+        #     ) * np.log(cfg.jumprelu_init_threshold)
 
         else:
             raise ValueError(f"Unknown architecture: {cfg.architecture}")
@@ -339,6 +343,20 @@ class TrainingSAE(SAE):
 
         return feature_acts, hidden_pre  # type: ignore
 
+
+    def get_fisher_reg_term(self, hidden_pre) -> torch.Tensor:
+        pseudo_loss = torch.sum(hidden_pre**2)
+        grads = torch.autograd.grad(
+            pseudo_loss, hidden_pre, create_graph=True, retain_graph=True
+        )[0]
+        F_empirical = torch.einsum("bi,bj->ij", grads, grads) / grads.shape[0]
+
+        off_diag = F_empirical - torch.diag(torch.diag(F_empirical))
+
+        fisher_reg_term = self.cfg.fisher_lambda_term * torch.sum(off_diag**2)
+
+        return fisher_reg_term
+
     def encode_with_hidden_pre_singular_fisher(
         self, x: Float[torch.Tensor, "... d_in"]
     ) -> tuple[Float[torch.Tensor, "... d_sae"], Float[torch.Tensor, "... d_sae"]]:
@@ -346,26 +364,10 @@ class TrainingSAE(SAE):
         hidden_pre : Float[torch.Tensor, "... d_sae"]  = sae_in @ self.W_enc + self.b_enc
 
         if self.training:
-            hidden_pre = (
-                hidden_pre + torch.randn_like(hidden_pre) * self.cfg.noise_scale
-            )
+            hidden_pre = (hidden_pre + torch.randn_like(hidden_pre) * self.cfg.noise_scale)
 
-            # --- Fisher Regularization ---
-            pseudo_loss = torch.sum(hidden_pre**2)
-            grads = torch.autograd.grad(
-                pseudo_loss,
-                hidden_pre,
-                create_graph=True,
-                retain_graph=True
-            )[0]
-            F_empirical = torch.einsum("bi,bj->ij", grads, grads) / grads.shape[0]
-
-            # Regularization option (e.g., off-diagonal penalty)
-            off_diag = F_empirical - torch.diag(torch.diag(F_empirical))
-            lambda_term = self.cfg.singular_fisher_fisher_lambda_term
-            fisher_reg = lambda_term * torch.sum(off_diag**2)
-
-            self.fisher_reg_term = fisher_reg
+            # Calculate the Fisher regularization term
+            self.fisher_reg_term = self.get_fisher_reg_term(hidden_pre)
 
 
         threshold = torch.exp(self.log_threshold)
@@ -408,10 +410,13 @@ class TrainingSAE(SAE):
         )  # magnitude_pre_activation_noised)
 
         # Return both the gated feature activations and the magnitude pre-activations
-        return (
-            active_features * feature_magnitudes,
-            magnitude_pre_activation,
-        )  # magnitude_pre_activation_noised
+        # return (
+        #     active_features * feature_magnitudes,
+        #     magnitude_pre_activation,
+        # )  # magnitude_pre_activation_noised
+        out_feature_acts = active_features * feature_magnitudes
+        return out_feature_acts, magnitude_pre_activation
+    
 
     def forward(
         self,
@@ -429,6 +434,9 @@ class TrainingSAE(SAE):
         # do a forward pass to get SAE out, but we also need the
         # hidden pre.
         feature_acts, hidden_pre = self.encode_with_hidden_pre_fn(sae_in)
+        if self.cfg.use_fisher:
+            logger.warning("Calculating Fisher regularization term for standard SAE")
+            self.fisher_reg_term = self.get_fisher_reg_term(feature_acts)
         sae_out = self.decode(feature_acts)
 
         # MSE LOSS
@@ -511,6 +519,9 @@ class TrainingSAE(SAE):
             losses["l1_loss"] = l1_loss
 
         losses["mse_loss"] = mse_loss
+        if self.cfg.use_fisher:
+            losses["fisher_reg_term"] = self.fisher_reg_term
+            loss = loss + self.fisher_reg_term
 
         return TrainStepOutput(
             sae_in=sae_in,

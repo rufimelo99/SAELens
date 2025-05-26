@@ -99,6 +99,8 @@ class LanguageModelSAERunnerConfig:
         prepend_bos (bool): Whether to prepend the beginning of sequence token. You should use whatever the model was trained with.
         jumprelu_init_threshold (float): The threshold to initialize for training JumpReLU SAEs.
         jumprelu_bandwidth (float): Bandwidth for training JumpReLU SAEs.
+        fisher_lambda_term (float): The lambda term for the Fisher information matrix. Used for redundant feature removal.
+        use_fisher (bool): Whether to use the Fisher information matrix for redundant feature removal.
         autocast (bool): Whether to use autocast during training. Saves vram.
         autocast_lm (bool): Whether to use autocast during activation fetching.
         compile_llm (bool): Whether to compile the LLM.
@@ -199,7 +201,8 @@ class LanguageModelSAERunnerConfig:
     jumprelu_bandwidth: float = 0.001
 
     # Likelihood Context
-    singular_fisher_fisher_lambda_term: float = 1e-4
+    fisher_lambda_term: float = 1e-4
+    use_fisher: bool = False  # whether to use the Fisher information matrix for redudant feature removal
 
     # Performance - see compilation section of lm_runner.py for info
     autocast: bool = False  # autocast to autocast_dtype during training
@@ -480,7 +483,8 @@ class LanguageModelSAERunnerConfig:
             "jumprelu_init_threshold": self.jumprelu_init_threshold,
             "jumprelu_bandwidth": self.jumprelu_bandwidth,
             "scale_sparsity_penalty_by_decoder_norm": self.scale_sparsity_penalty_by_decoder_norm,
-            "singular_fisher_fisher_lambda_term": self.singular_fisher_fisher_lambda_term,
+            "fisher_lambda_term": self.fisher_lambda_term,
+            "use_fisher": self.use_fisher,
         }
 
     def to_dict(self) -> dict[str, Any]:
