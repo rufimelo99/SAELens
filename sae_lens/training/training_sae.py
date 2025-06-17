@@ -343,20 +343,6 @@ class TrainingSAE(SAE):
 
         return feature_acts, hidden_pre  # type: ignore
 
-
-    def get_fisher_reg_term(self, hidden_pre) -> torch.Tensor:
-        pseudo_loss = torch.sum(hidden_pre**2)
-        grads = torch.autograd.grad(
-            pseudo_loss, hidden_pre, create_graph=True, retain_graph=True
-        )[0]
-        F_empirical = torch.einsum("bi,bj->ij", grads, grads) / grads.shape[0]
-
-        off_diag = F_empirical - torch.diag(torch.diag(F_empirical))
-
-        fisher_reg_term = self.cfg.fisher_lambda_term * torch.sum(off_diag**2)
-
-        return fisher_reg_term
-
     def encode_with_hidden_pre_singular_fisher(
         self, x: Float[torch.Tensor, "... d_in"]
     ) -> tuple[Float[torch.Tensor, "... d_sae"], Float[torch.Tensor, "... d_sae"]]:
@@ -418,12 +404,34 @@ class TrainingSAE(SAE):
         return out_feature_acts, magnitude_pre_activation
     
 
+
     def forward(
         self,
         x: Float[torch.Tensor, "... d_in"],
     ) -> Float[torch.Tensor, "... d_in"]:
         feature_acts, _ = self.encode_with_hidden_pre_fn(x)
         return self.decode(feature_acts)
+
+    def get_fisher_reg_term(self, feature_acts) -> torch.Tensor:
+        pseudo_loss = torch.sum(feature_acts**2)
+        grads = torch.autograd.grad(
+            pseudo_loss, feature_acts, create_graph=True, retain_graph=True
+        )[0]
+
+        # Normalize feature activations along the batch (rows)
+        grads = grads - grads.mean(dim=0, keepdim=True)
+        grads = grads / (grads.norm(dim=0, keepdim=True) + 1e-8)
+
+        # Compute empirical Fisher matrix
+        F_empirical = torch.einsum("bi,bj->ij", grads, grads) / feature_acts.shape[0]
+
+        # Remove diagonal (self-correlation)
+        off_diag = F_empirical - torch.diag(torch.diag(F_empirical))
+
+        # Penalize off-diagonal (correlation) terms
+        fisher_reg_term = self.cfg.fisher_lambda_term * torch.sum(off_diag**2)
+
+        return fisher_reg_term
 
     def training_forward_pass(
         self,
@@ -434,7 +442,7 @@ class TrainingSAE(SAE):
         # do a forward pass to get SAE out, but we also need the
         # hidden pre.
         feature_acts, hidden_pre = self.encode_with_hidden_pre_fn(sae_in)
-        if self.cfg.use_fisher:
+        if self.cfg.use_fisher and self.cfg.architecture != "gated":
             self.fisher_reg_term = self.get_fisher_reg_term(feature_acts)
         sae_out = self.decode(feature_acts)
 
@@ -465,9 +473,16 @@ class TrainingSAE(SAE):
             aux_reconstruction_loss = torch.sum(
                 (via_gate_reconstruction - sae_in) ** 2, dim=-1
             ).mean()
+
             loss = mse_loss + l1_loss + aux_reconstruction_loss
+
             losses["auxiliary_reconstruction_loss"] = aux_reconstruction_loss
             losses["l1_loss"] = l1_loss
+            if self.cfg.use_fisher:
+                self.fisher_reg_term = self.get_fisher_reg_term(feature_acts)
+                losses["fisher_reg_term"] = self.fisher_reg_term
+                loss += self.fisher_reg_term
+
         elif self.cfg.architecture == "jumprelu":
             threshold = torch.exp(self.log_threshold)
             l0 = torch.sum(Step.apply(hidden_pre, threshold, self.bandwidth), dim=-1)  # type: ignore
@@ -518,7 +533,7 @@ class TrainingSAE(SAE):
             losses["l1_loss"] = l1_loss
 
         losses["mse_loss"] = mse_loss
-        if self.cfg.use_fisher:
+        if self.cfg.use_fisher and self.cfg.architecture != "gated":
             losses["fisher_reg_term"] = self.fisher_reg_term
             loss = loss + self.fisher_reg_term
 
