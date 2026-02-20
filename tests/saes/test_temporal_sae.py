@@ -2,7 +2,6 @@ import os
 
 import pytest
 import torch
-
 from sae_lens.constants import DTYPE_MAP
 from sae_lens.saes.sae import SAE
 from sae_lens.saes.temporal_sae import ManualAttention, TemporalSAE

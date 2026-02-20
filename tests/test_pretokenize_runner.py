@@ -5,8 +5,6 @@ from typing import Any, cast
 import numpy as np
 import pytest
 from datasets import Dataset, IterableDataset
-from transformers import AutoTokenizer, PreTrainedTokenizerBase
-
 from sae_lens import __version__
 from sae_lens.config import PretokenizeRunnerConfig
 from sae_lens.pretokenize_runner import (
@@ -14,6 +12,7 @@ from sae_lens.pretokenize_runner import (
     get_special_token_from_cfg,
     pretokenize_dataset,
 )
+from transformers import AutoTokenizer, PreTrainedTokenizerBase
 
 
 @pytest.fixture

@@ -7,9 +7,6 @@ import torch
 import yaml
 from huggingface_hub import hf_hub_download as real_hf_hub_download
 from huggingface_hub.utils import EntryNotFoundError
-from safetensors.torch import save_file
-from sparsify import SparseCoder, SparseCoderConfig
-
 from sae_lens import StandardSAE, StandardSAEConfig
 from sae_lens.loading.pretrained_sae_loaders import (
     _infer_gemma_3_raw_cfg_dict,
@@ -33,6 +30,8 @@ from sae_lens.loading.pretrained_sae_loaders import (
     sparsify_huggingface_loader,
 )
 from sae_lens.saes.sae import SAE
+from safetensors.torch import save_file
+from sparsify import SparseCoder, SparseCoderConfig
 from tests.helpers import assert_close, random_params
 
 

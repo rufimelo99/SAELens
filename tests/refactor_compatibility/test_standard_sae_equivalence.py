@@ -13,12 +13,8 @@ from sae_lens.saes.standard_sae import (
 
 # Old modules
 from sae_lens.util import extract_stop_at_layer_from_tlens_hook_name
-from tests._comparison.sae_lens_old.sae import (
-    SAE as OldSAE,
-)
-from tests._comparison.sae_lens_old.sae import (
-    SAEConfig as OldSAEConfig,
-)
+from tests._comparison.sae_lens_old.sae import SAE as OldSAE
+from tests._comparison.sae_lens_old.sae import SAEConfig as OldSAEConfig
 from tests._comparison.sae_lens_old.training.training_sae import (
     TrainingSAE as OldTrainingSAE,
 )

@@ -3,12 +3,11 @@ from contextlib import contextmanager
 from typing import Any, Callable
 
 import torch
+from sae_lens.saes.sae import SAE
 from transformer_lens.ActivationCache import ActivationCache
 from transformer_lens.components.mlps.can_be_used_as_mlp import CanBeUsedAsMLP
 from transformer_lens.hook_points import HookPoint  # Hooking utilities
 from transformer_lens.HookedTransformer import HookedTransformer
-
-from sae_lens.saes.sae import SAE
 
 SingleLoss = torch.Tensor  # Type alias for a single element tensor
 LossPerToken = torch.Tensor

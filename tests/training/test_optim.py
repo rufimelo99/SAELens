@@ -2,14 +2,13 @@ from typing import Any
 
 import pytest
 import torch
+from sae_lens.training.optim import get_lr_scheduler
 from torch.optim import Adam
 from torch.optim.lr_scheduler import (
     CosineAnnealingLR,
     CosineAnnealingWarmRestarts,
     LRScheduler,
 )
-
-from sae_lens.training.optim import get_lr_scheduler
 
 LR = 0.1
 

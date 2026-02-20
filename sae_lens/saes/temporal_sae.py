@@ -13,11 +13,10 @@ from typing import Literal
 
 import torch
 import torch.nn.functional as F
-from torch import nn
-from typing_extensions import override
-
 from sae_lens import logger
 from sae_lens.saes.sae import SAE, SAEConfig
+from torch import nn
+from typing_extensions import override
 
 
 def get_attention(query: torch.Tensor, key: torch.Tensor) -> torch.Tensor:

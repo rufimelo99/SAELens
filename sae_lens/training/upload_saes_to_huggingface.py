@@ -6,8 +6,6 @@ from typing import Any, Iterable
 
 from huggingface_hub import HfApi, create_repo, get_hf_file_metadata, hf_hub_url
 from huggingface_hub.utils import EntryNotFoundError, RepositoryNotFoundError
-from tqdm.autonotebook import tqdm
-
 from sae_lens import logger
 from sae_lens.constants import (
     RUNNER_CFG_FILENAME,
@@ -16,6 +14,7 @@ from sae_lens.constants import (
     SPARSITY_FILENAME,
 )
 from sae_lens.saes.sae import SAE
+from tqdm.autonotebook import tqdm
 
 
 def upload_saes_to_huggingface(

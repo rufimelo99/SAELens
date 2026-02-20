@@ -1,6 +1,5 @@
 import pytest
 import torch
-
 from sae_lens.training.mixing_buffer import mixing_buffer
 from tests.helpers import assert_not_close
 

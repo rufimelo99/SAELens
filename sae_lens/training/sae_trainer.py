@@ -5,10 +5,6 @@ from typing import Any, Callable, Generic, Protocol
 
 import torch
 import wandb
-from safetensors.torch import save_file
-from torch.optim import Adam
-from tqdm.auto import tqdm
-
 from sae_lens import __version__
 from sae_lens.config import SAETrainerConfig
 from sae_lens.constants import (
@@ -28,6 +24,9 @@ from sae_lens.training.activation_scaler import ActivationScaler
 from sae_lens.training.optim import CoefficientScheduler, get_lr_scheduler
 from sae_lens.training.types import DataProvider
 from sae_lens.util import path_or_tmp_dir
+from safetensors.torch import save_file
+from torch.optim import Adam
+from tqdm.auto import tqdm
 
 
 def _log_feature_sparsity(
@@ -59,6 +58,7 @@ class SAETrainer(Generic[T_TRAINING_SAE, T_TRAINING_SAE_CONFIG]):
     """
 
     data_provider: DataProvider
+    test_data_provider: DataProvider | None
     activation_scaler: ActivationScaler
     evaluator: Evaluator[T_TRAINING_SAE] | None
     coefficient_schedulers: dict[str, CoefficientScheduler]
@@ -70,9 +70,11 @@ class SAETrainer(Generic[T_TRAINING_SAE, T_TRAINING_SAE_CONFIG]):
         data_provider: DataProvider,
         evaluator: Evaluator[T_TRAINING_SAE] | None = None,
         save_checkpoint_fn: SaveCheckpointFn | None = None,
+        test_data_provider: DataProvider | None = None,
     ) -> None:
         self.sae = sae
         self.data_provider = data_provider
+        self.test_data_provider = test_data_provider
         self.evaluator = evaluator
         self.activation_scaler = ActivationScaler()
         self.save_checkpoint_fn = save_checkpoint_fn
@@ -179,6 +181,7 @@ class SAETrainer(Generic[T_TRAINING_SAE, T_TRAINING_SAE_CONFIG]):
             if self.cfg.logger.log_to_wandb:
                 self._log_train_step(step_output)
                 self._run_and_log_evals()
+                self._run_and_log_test_evals()
 
             self._checkpoint_if_needed()
             self.n_training_steps += 1
@@ -406,6 +409,47 @@ class SAETrainer(Generic[T_TRAINING_SAE, T_TRAINING_SAE_CONFIG]):
                 step=self.n_training_steps,
             )
             self.sae.train()
+
+    @torch.no_grad()
+    def _run_and_log_test_evals(self):
+        """Compute and log test loss metrics on a held-out test set."""
+        if self.test_data_provider is None:
+            return
+
+        # Only run test evals at the specified frequency
+        if (self.n_training_steps + 1) % self.cfg.test_eval_every_n_steps != 0:
+            return
+
+        self.sae.eval()
+
+        # Get a batch from the test set
+        test_batch = next(self.test_data_provider).to(self.sae.device)
+        scaled_test_batch = self.activation_scaler(test_batch)
+
+        # Get feature activations and reconstruction
+        feature_acts = self.sae.encode(scaled_test_batch)
+        sae_out = self.sae.decode(feature_acts)
+
+        # Compute test metrics
+        per_token_l2_loss = (sae_out - scaled_test_batch).pow(2).sum(dim=-1).squeeze()
+        total_variance = (scaled_test_batch - scaled_test_batch.mean(0)).pow(2).sum(-1)
+        test_mse = per_token_l2_loss.mean()
+        test_explained_variance = 1 - test_mse / total_variance.mean()
+
+        # Compute L0 (average number of active features)
+        if feature_acts.is_sparse:
+            test_l0 = feature_acts.to_dense().bool().float().sum(-1).mean()
+        else:
+            test_l0 = feature_acts.bool().float().sum(-1).mean()
+
+        test_metrics = {
+            "test/mse": test_mse.item(),
+            "test/explained_variance": test_explained_variance.item(),
+            "test/l0": test_l0.item(),
+        }
+
+        wandb.log(test_metrics, step=self.n_training_steps)
+        self.sae.train()
 
     @torch.no_grad()
     def _build_sparsity_log_dict(self) -> dict[str, Any]:

@@ -6,9 +6,8 @@ from pathlib import Path
 from typing import Sequence, TypeVar
 
 import torch
-from transformers import PreTrainedTokenizerBase
-
 from sae_lens.constants import DTYPE_MAP, DTYPE_TO_STR
+from transformers import PreTrainedTokenizerBase
 
 K = TypeVar("K")
 V = TypeVar("V")

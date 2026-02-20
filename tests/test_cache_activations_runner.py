@@ -9,19 +9,15 @@ import numpy as np
 import pytest
 import torch
 from datasets import Dataset, load_dataset
-from tqdm import trange
-from transformer_lens import HookedTransformer
-
 from sae_lens.cache_activations_runner import CacheActivationsRunner
-from sae_lens.config import (
-    CacheActivationsRunnerConfig,
-    LanguageModelSAERunnerConfig,
-)
+from sae_lens.config import CacheActivationsRunnerConfig, LanguageModelSAERunnerConfig
 from sae_lens.constants import DTYPE_MAP
 from sae_lens.load_model import load_model
 from sae_lens.saes.standard_sae import StandardTrainingSAEConfig
 from sae_lens.training.activations_store import ActivationsStore
 from tests.helpers import assert_close
+from tqdm import trange
+from transformer_lens import HookedTransformer
 
 
 def _default_cfg(

@@ -13,11 +13,6 @@ from datasets import Dataset, DatasetDict, IterableDataset, load_dataset
 from huggingface_hub import hf_hub_download
 from huggingface_hub.utils import HfHubHTTPError
 from requests import HTTPError
-from safetensors.torch import load_file, save_file
-from tqdm.auto import tqdm
-from transformer_lens.hook_points import HookedRootModule
-from transformers import AutoTokenizer, PreTrainedTokenizerBase
-
 from sae_lens import logger
 from sae_lens.config import (
     CacheActivationsRunnerConfig,
@@ -34,6 +29,10 @@ from sae_lens.util import (
     get_special_token_ids,
     str_to_dtype,
 )
+from safetensors.torch import load_file, save_file
+from tqdm.auto import tqdm
+from transformer_lens.hook_points import HookedRootModule
+from transformers import AutoTokenizer, PreTrainedTokenizerBase
 
 
 # TODO: Make an activation store config class to be consistent with the rest of the code.

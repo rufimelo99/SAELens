@@ -1,6 +1,5 @@
 import pandas as pd
 import pytest
-
 from sae_lens.loading.pretrained_saes_directory import (
     PretrainedSAELookup,
     get_pretrained_saes_directory,

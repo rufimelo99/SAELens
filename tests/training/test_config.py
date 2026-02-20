@@ -1,7 +1,6 @@
 from typing import Type
 
 import pytest
-
 from sae_lens.config import (
     CacheActivationsRunnerConfig,
     LanguageModelSAERunnerConfig,

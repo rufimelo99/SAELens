@@ -3,9 +3,6 @@ from dataclasses import dataclass
 import numpy as np
 import torch
 from numpy.typing import NDArray
-from torch import nn
-from typing_extensions import override
-
 from sae_lens.saes.sae import (
     SAE,
     SAEConfig,
@@ -14,6 +11,8 @@ from sae_lens.saes.sae import (
     TrainingSAEConfig,
     TrainStepInput,
 )
+from torch import nn
+from typing_extensions import override
 
 
 @dataclass

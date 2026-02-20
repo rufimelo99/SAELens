@@ -3,8 +3,6 @@ from pathlib import Path
 
 import pytest
 import torch
-from torch import nn
-
 from sae_lens.saes.gated_sae import GatedSAE, GatedTrainingSAE
 from sae_lens.saes.sae import SAE, TrainStepInput
 from tests.helpers import (
@@ -13,6 +11,7 @@ from tests.helpers import (
     build_gated_sae_cfg,
     build_gated_sae_training_cfg,
 )
+from torch import nn
 
 
 @pytest.mark.parametrize("use_error_term", [True, False])

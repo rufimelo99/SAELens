@@ -8,14 +8,13 @@ from typing import Iterator, Literal, cast
 import torch
 from datasets import Dataset, DatasetDict, load_dataset
 from huggingface_hub import HfApi
-from transformers import AutoTokenizer, PreTrainedTokenizerBase
-from typing_extensions import deprecated
-
 from tests._comparison.sae_lens_old import __version__
 from tests._comparison.sae_lens_old.config import PretokenizeRunnerConfig
 from tests._comparison.sae_lens_old.tokenization_and_batching import (
     concat_and_batch_sequences,
 )
+from transformers import AutoTokenizer, PreTrainedTokenizerBase
+from typing_extensions import deprecated
 
 
 @dataclass

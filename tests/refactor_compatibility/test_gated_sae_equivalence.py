@@ -1,21 +1,14 @@
 import pytest
 import torch
-
 from sae_lens.saes.gated_sae import (
     GatedSAE,
     GatedSAEConfig,
     GatedTrainingSAE,
     GatedTrainingSAEConfig,
 )
-from sae_lens.saes.sae import (
-    TrainStepInput,
-)
-from tests._comparison.sae_lens_old.sae import (
-    SAE as OldSAE,
-)
-from tests._comparison.sae_lens_old.sae import (
-    SAEConfig as OldSAEConfig,
-)
+from sae_lens.saes.sae import TrainStepInput
+from tests._comparison.sae_lens_old.sae import SAE as OldSAE
+from tests._comparison.sae_lens_old.sae import SAEConfig as OldSAEConfig
 from tests._comparison.sae_lens_old.training.training_sae import (
     TrainingSAE as OldTrainingSAE,
 )

@@ -3,11 +3,10 @@ from typing import Generator
 import numpy as np
 import pytest
 import torch
-from transformer_lens import HookedTransformer
-
 from sae_lens.training.activation_scaler import ActivationScaler
 from sae_lens.training.activations_store import ActivationsStore
 from tests.helpers import assert_close, build_runner_cfg
+from transformer_lens import HookedTransformer
 
 
 def test_ActivationScaler_scale_without_scaling_factor():

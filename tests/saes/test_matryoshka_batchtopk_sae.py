@@ -7,7 +7,6 @@ from dictionary_learning.trainers.matryoshka_batch_top_k import (
     MatryoshkaBatchTopKSAE,
     MatryoshkaBatchTopKTrainer,
 )
-
 from sae_lens.saes.batchtopk_sae import BatchTopKTrainingSAE
 from sae_lens.saes.jumprelu_sae import JumpReLUSAE
 from sae_lens.saes.matryoshka_batchtopk_sae import (

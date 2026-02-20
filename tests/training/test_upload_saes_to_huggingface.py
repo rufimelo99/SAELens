@@ -3,7 +3,6 @@ from textwrap import dedent
 
 import pytest
 from huggingface_hub import HfApi
-
 from sae_lens.saes.sae import SAE
 from sae_lens.training.upload_saes_to_huggingface import (
     _build_sae_path,

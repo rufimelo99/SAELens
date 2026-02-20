@@ -1,5 +1,4 @@
 import torch
-
 from sae_lens.config import LanguageModelSAERunnerConfig, LoggingConfig
 from sae_lens.llm_sae_training_runner import LanguageModelSAETrainingRunner
 from sae_lens.saes.gated_sae import GatedTrainingSAEConfig

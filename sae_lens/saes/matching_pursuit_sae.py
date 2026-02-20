@@ -5,8 +5,6 @@ from dataclasses import dataclass
 from typing import Any
 
 import torch
-from typing_extensions import override
-
 from sae_lens.saes.sae import (
     SAE,
     SAEConfig,
@@ -16,6 +14,7 @@ from sae_lens.saes.sae import (
     TrainStepInput,
     TrainStepOutput,
 )
+from typing_extensions import override
 
 # --- inference ---
 

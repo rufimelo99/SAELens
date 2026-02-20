@@ -7,9 +7,6 @@ from pathlib import Path
 import pytest
 import torch
 from huggingface_hub import hf_hub_download
-from safetensors import safe_open
-from transformer_lens.hook_points import HookPoint
-
 from sae_lens.config import LanguageModelSAERunnerConfig
 from sae_lens.saes.sae import SAE, TrainingSAE, _disable_hooks
 from sae_lens.saes.standard_sae import (
@@ -18,6 +15,7 @@ from sae_lens.saes.standard_sae import (
     StandardTrainingSAEConfig,
 )
 from sae_lens.util import dtype_to_str
+from safetensors import safe_open
 from tests.helpers import (
     ALL_ARCHITECTURES,
     ALL_FOLDABLE_ARCHITECTURES,
@@ -30,6 +28,7 @@ from tests.helpers import (
     build_sae_training_cfg,
     build_sae_training_cfg_for_arch,
 )
+from transformer_lens.hook_points import HookPoint
 
 
 # Define a new fixture for different configurations

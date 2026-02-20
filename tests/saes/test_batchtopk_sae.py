@@ -4,7 +4,6 @@ from pathlib import Path
 import pytest
 import torch
 import torch.nn as nn
-
 from sae_lens.saes.batchtopk_sae import (
     BatchTopK,
     BatchTopKTrainingSAE,

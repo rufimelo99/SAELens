@@ -4,8 +4,6 @@ from typing import Any, Literal, TypedDict, cast
 
 import pytest
 import torch
-from transformer_lens import HookedTransformer
-
 from sae_lens.config import LanguageModelSAERunnerConfig, LoggingConfig
 from sae_lens.saes.batchtopk_sae import BatchTopKTrainingSAEConfig
 from sae_lens.saes.gated_sae import GatedSAEConfig, GatedTrainingSAEConfig
@@ -19,6 +17,7 @@ from sae_lens.saes.sae import T_TRAINING_SAE_CONFIG, SAEConfig, TrainingSAEConfi
 from sae_lens.saes.standard_sae import StandardSAEConfig, StandardTrainingSAEConfig
 from sae_lens.saes.temporal_sae import TemporalSAEConfig
 from sae_lens.saes.topk_sae import TopKSAEConfig, TopKTrainingSAEConfig
+from transformer_lens import HookedTransformer
 
 TINYSTORIES_MODEL = "tiny-stories-1M"
 NEEL_NANDA_C4_10K_DATASET = "NeelNanda/c4-10k"

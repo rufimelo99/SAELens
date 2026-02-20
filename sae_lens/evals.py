@@ -16,10 +16,6 @@ from typing import Any, Iterable
 import einops
 import pandas as pd
 import torch
-from tqdm.auto import tqdm
-from transformer_lens import HookedTransformer
-from transformer_lens.hook_points import HookedRootModule
-
 from sae_lens.loading.pretrained_saes_directory import get_pretrained_saes_directory
 from sae_lens.saes.sae import SAE, SAEConfig
 from sae_lens.training.activation_scaler import ActivationScaler
@@ -28,6 +24,9 @@ from sae_lens.util import (
     extract_stop_at_layer_from_tlens_hook_name,
     get_special_token_ids,
 )
+from tqdm.auto import tqdm
+from transformer_lens import HookedTransformer
+from transformer_lens.hook_points import HookedRootModule
 
 
 def get_library_version() -> str:

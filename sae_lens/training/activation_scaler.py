@@ -4,9 +4,8 @@ from pathlib import Path
 from statistics import mean
 
 import torch
-from tqdm.auto import tqdm
-
 from sae_lens.training.types import DataProvider
+from tqdm.auto import tqdm
 
 
 @dataclass

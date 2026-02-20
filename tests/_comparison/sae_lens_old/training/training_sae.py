@@ -9,9 +9,6 @@ import einops
 import numpy as np
 import torch
 from jaxtyping import Float
-from torch import nn
-from typing_extensions import deprecated
-
 from tests._comparison.sae_lens_old import logger
 from tests._comparison.sae_lens_old.config import LanguageModelSAERunnerConfig
 from tests._comparison.sae_lens_old.sae import SAE, SAEConfig
@@ -20,6 +17,8 @@ from tests._comparison.sae_lens_old.toolkit.pretrained_sae_loaders import (
     handle_config_defaulting,
     sae_lens_disk_loader,
 )
+from torch import nn
+from typing_extensions import deprecated
 
 
 def rectangle(x: torch.Tensor) -> torch.Tensor:

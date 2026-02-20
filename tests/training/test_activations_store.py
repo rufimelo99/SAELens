@@ -7,10 +7,6 @@ from pathlib import Path
 import pytest
 import torch
 from datasets import Dataset
-from safetensors.torch import load_file
-from transformer_lens import HookedTransformer
-from transformers import AutoTokenizer
-
 from sae_lens.config import LanguageModelSAERunnerConfig, PretokenizeRunnerConfig
 from sae_lens.load_model import load_model
 from sae_lens.pretokenize_runner import pretokenize_dataset
@@ -22,6 +18,7 @@ from sae_lens.training.activations_store import (
     permute_together,
     validate_pretokenized_dataset_tokenizer,
 )
+from safetensors.torch import load_file
 from tests.helpers import (
     NEEL_NANDA_C4_10K_DATASET,
     assert_close,
@@ -29,6 +26,8 @@ from tests.helpers import (
     build_runner_cfg,
     load_model_cached,
 )
+from transformer_lens import HookedTransformer
+from transformers import AutoTokenizer
 
 
 def tokenize_with_bos(model: HookedTransformer, text: str) -> list[int]:

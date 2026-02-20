@@ -2,7 +2,6 @@ import os
 import sys
 
 import torch
-
 from sae_lens.saes.standard_sae import StandardTrainingSAEConfig
 
 sys.path.append("..")

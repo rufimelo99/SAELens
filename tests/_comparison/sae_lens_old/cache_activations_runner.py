@@ -10,9 +10,6 @@ from datasets import Array2D, Dataset, Features, Sequence, Value
 from datasets.fingerprint import generate_fingerprint
 from huggingface_hub import HfApi
 from jaxtyping import Float, Int
-from tqdm import tqdm
-from transformer_lens.HookedTransformer import HookedRootModule
-
 from tests._comparison.sae_lens_old import logger
 from tests._comparison.sae_lens_old.config import (
     DTYPE_MAP,
@@ -20,6 +17,8 @@ from tests._comparison.sae_lens_old.config import (
 )
 from tests._comparison.sae_lens_old.load_model import load_model
 from tests._comparison.sae_lens_old.training.activations_store import ActivationsStore
+from tqdm import tqdm
+from transformer_lens.HookedTransformer import HookedRootModule
 
 
 def _mk_activations_store(

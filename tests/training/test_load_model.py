@@ -2,11 +2,10 @@ import sys
 
 import pytest
 from mamba_lens import HookedMamba
-from transformer_lens import HookedTransformer
-from transformers import AutoModelForCausalLM, AutoTokenizer
-
 from sae_lens.load_model import HookedProxyLM, _extract_logits_from_output, load_model
 from tests.helpers import assert_close
+from transformer_lens import HookedTransformer
+from transformers import AutoModelForCausalLM, AutoTokenizer
 
 
 @pytest.fixture

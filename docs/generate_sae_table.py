@@ -10,12 +10,9 @@ from textwrap import dedent
 import pandas as pd
 import yaml
 from bs4 import BeautifulSoup
-from tqdm.auto import tqdm
-
 from sae_lens import SAEConfig
-from sae_lens.loading.pretrained_sae_loaders import (
-    load_sae_config_from_huggingface,
-)
+from sae_lens.loading.pretrained_sae_loaders import load_sae_config_from_huggingface
+from tqdm.auto import tqdm
 
 MAX_WORKERS = 4
 

@@ -5,8 +5,6 @@ from typing import Any, Callable
 import pytest
 import torch
 from datasets import Dataset
-from transformer_lens import HookedTransformer
-
 from sae_lens import __version__
 from sae_lens.config import LanguageModelSAERunnerConfig
 from sae_lens.llm_sae_training_runner import (
@@ -28,6 +26,7 @@ from tests.helpers import (
     build_runner_cfg,
     load_model_cached,
 )
+from transformer_lens import HookedTransformer
 
 
 @pytest.fixture

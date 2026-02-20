@@ -8,8 +8,6 @@ from unittest.mock import MagicMock, patch
 import pytest
 import torch
 from datasets import Dataset
-from transformer_lens import HookedTransformer
-
 from sae_lens.config import LanguageModelSAERunnerConfig
 from sae_lens.evals import (
     EvalConfig,
@@ -27,9 +25,7 @@ from sae_lens.evals import (
 )
 from sae_lens.load_model import load_model
 from sae_lens.loading.pretrained_saes_directory import PretrainedSAELookup
-from sae_lens.saes.batchtopk_sae import (
-    BatchTopKTrainingSAE,
-)
+from sae_lens.saes.batchtopk_sae import BatchTopKTrainingSAE
 from sae_lens.saes.sae import SAE, TrainingSAE
 from sae_lens.saes.standard_sae import StandardSAE, StandardTrainingSAE
 from sae_lens.saes.topk_sae import TopKTrainingSAE
@@ -44,6 +40,7 @@ from tests.helpers import (
     load_model_cached,
     random_params,
 )
+from transformer_lens import HookedTransformer
 
 TRAINER_EVAL_CONFIG = EvalConfig(
     n_eval_reconstruction_batches=10,

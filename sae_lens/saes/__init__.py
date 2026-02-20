@@ -1,7 +1,4 @@
-from .batchtopk_sae import (
-    BatchTopKTrainingSAE,
-    BatchTopKTrainingSAEConfig,
-)
+from .batchtopk_sae import BatchTopKTrainingSAE, BatchTopKTrainingSAEConfig
 from .gated_sae import (
     GatedSAE,
     GatedSAEConfig,
@@ -32,12 +29,7 @@ from .standard_sae import (
     StandardTrainingSAEConfig,
 )
 from .temporal_sae import TemporalSAE, TemporalSAEConfig
-from .topk_sae import (
-    TopKSAE,
-    TopKSAEConfig,
-    TopKTrainingSAE,
-    TopKTrainingSAEConfig,
-)
+from .topk_sae import TopKSAE, TopKSAEConfig, TopKTrainingSAE, TopKTrainingSAEConfig
 from .transcoder import (
     JumpReLUSkipTranscoder,
     JumpReLUSkipTranscoderConfig,

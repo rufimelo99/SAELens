@@ -3,7 +3,6 @@ import urllib.parse
 from unittest.mock import MagicMock, patch
 
 import pytest
-
 from sae_lens.analysis.neuronpedia_integration import (
     NEURONPEDIA_DOMAIN,
     NanAndInfReplacer,

@@ -13,10 +13,6 @@ import einops
 import torch
 from jaxtyping import Float
 from safetensors.torch import save_file
-from torch import nn
-from transformer_lens.hook_points import HookedRootModule, HookPoint
-from typing_extensions import deprecated
-
 from tests._comparison.sae_lens_old.config import (
     DTYPE_MAP,
     SAE_CFG_FILENAME,
@@ -37,6 +33,9 @@ from tests._comparison.sae_lens_old.toolkit.pretrained_saes_directory import (
     get_pretrained_saes_directory,
     get_repo_id_and_folder_name,
 )
+from torch import nn
+from transformer_lens.hook_points import HookedRootModule, HookPoint
+from typing_extensions import deprecated
 
 T = TypeVar("T", bound="SAE")
 

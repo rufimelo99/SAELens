@@ -3,7 +3,6 @@ from typing import Any
 
 import pytest
 import torch
-
 from sae_lens.saes.transcoder import (
     JumpReLUSkipTranscoder,
     JumpReLUSkipTranscoderConfig,

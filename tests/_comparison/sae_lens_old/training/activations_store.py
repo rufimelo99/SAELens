@@ -16,11 +16,6 @@ from huggingface_hub.utils import HfHubHTTPError
 from jaxtyping import Float, Int
 from requests import HTTPError
 from safetensors.torch import save_file
-from torch.utils.data import DataLoader
-from tqdm import tqdm
-from transformer_lens.hook_points import HookedRootModule
-from transformers import AutoTokenizer, PreTrainedTokenizerBase
-
 from tests._comparison.sae_lens_old import logger
 from tests._comparison.sae_lens_old.config import (
     DTYPE_MAP,
@@ -32,6 +27,10 @@ from tests._comparison.sae_lens_old.sae import SAE
 from tests._comparison.sae_lens_old.tokenization_and_batching import (
     concat_and_batch_sequences,
 )
+from torch.utils.data import DataLoader
+from tqdm import tqdm
+from transformer_lens.hook_points import HookedRootModule
+from transformers import AutoTokenizer, PreTrainedTokenizerBase
 
 
 # TODO: Make an activation store config class to be consistent with the rest of the code.

@@ -2,8 +2,6 @@ from pathlib import Path
 
 import pytest
 import torch
-from transformer_lens import HookedTransformer
-
 from sae_lens.util import (
     dtype_to_str,
     extract_stop_at_layer_from_tlens_hook_name,
@@ -11,6 +9,7 @@ from sae_lens.util import (
     path_or_tmp_dir,
     str_to_dtype,
 )
+from transformer_lens import HookedTransformer
 
 
 @pytest.mark.parametrize(

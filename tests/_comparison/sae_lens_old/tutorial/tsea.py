@@ -8,9 +8,8 @@ import pandas as pd
 import plotly_express as px
 import torch
 from babe import UsNames
-from transformer_lens import HookedTransformer
-
 from tests._comparison.sae_lens_old import logger
+from transformer_lens import HookedTransformer
 
 
 def get_enrichment_df(

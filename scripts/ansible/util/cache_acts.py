@@ -5,7 +5,6 @@ import time
 
 import torch
 import yaml
-
 from sae_lens.cache_activations_runner import CacheActivationsRunner
 from sae_lens.config import CacheActivationsRunnerConfig
 from sae_lens.constants import DTYPE_MAP

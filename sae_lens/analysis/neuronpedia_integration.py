@@ -5,7 +5,6 @@ from typing import Any
 
 import requests
 from dotenv import load_dotenv
-
 from sae_lens import SAE, logger
 
 NEURONPEDIA_DOMAIN = "https://neuronpedia.org"

@@ -15,12 +15,11 @@ from datasets import (
     IterableDatasetDict,
     load_dataset,
 )
-
 from sae_lens import __version__, logger
 
 # keeping this unused import since some SAELens deps import DTYPE_MAP from config
-from sae_lens.constants import (
-    DTYPE_MAP,  # noqa: F401  # pyright: ignore[reportUnusedImport]
+from sae_lens.constants import (  # noqa: F401  # pyright: ignore[reportUnusedImport]
+    DTYPE_MAP,
 )
 from sae_lens.registry import get_sae_training_class
 from sae_lens.saes.sae import TrainingSAEConfig
@@ -261,6 +260,10 @@ class LanguageModelSAERunnerConfig(Generic[T_TRAINING_SAE_CONFIG]):
     n_eval_batches: int = 10
     eval_batch_size_prompts: int | None = None  # useful if evals cause OOM
 
+    # Test set evaluation
+    test_dataset_path: str | None = None  # Path to test dataset for tracking test loss
+    test_eval_every_n_steps: int = 100  # How often to compute test loss (in training steps)
+
     logger: LoggingConfig = field(default_factory=LoggingConfig)
 
     # Outputs/Checkpoints
@@ -458,6 +461,7 @@ class LanguageModelSAERunnerConfig(Generic[T_TRAINING_SAE_CONFIG]):
             dead_feature_window=self.dead_feature_window,
             feature_sampling_window=self.feature_sampling_window,
             logger=self.logger,
+            test_eval_every_n_steps=self.test_eval_every_n_steps,
         )
 
 
@@ -684,6 +688,7 @@ class SAETrainerConfig:
     dead_feature_window: int
     feature_sampling_window: int
     logger: LoggingConfig
+    test_eval_every_n_steps: int = 100
 
     @property
     def total_training_steps(self) -> int:

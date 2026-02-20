@@ -8,17 +8,9 @@ from typing import Any, Generic
 
 import torch
 import wandb
-from safetensors.torch import save_file
-from simple_parsing import ArgumentParser
-from transformer_lens.hook_points import HookedRootModule
-from typing_extensions import deprecated
-
 from sae_lens import logger
 from sae_lens.config import HfDataset, LanguageModelSAERunnerConfig
-from sae_lens.constants import (
-    RUNNER_CFG_FILENAME,
-    SPARSITY_FILENAME,
-)
+from sae_lens.constants import RUNNER_CFG_FILENAME, SPARSITY_FILENAME
 from sae_lens.evals import EvalConfig, run_evals
 from sae_lens.load_model import load_model
 from sae_lens.registry import SAE_TRAINING_CLASS_REGISTRY
@@ -32,6 +24,10 @@ from sae_lens.training.activation_scaler import ActivationScaler
 from sae_lens.training.activations_store import ActivationsStore
 from sae_lens.training.sae_trainer import SAETrainer
 from sae_lens.training.types import DataProvider
+from safetensors.torch import save_file
+from simple_parsing import ArgumentParser
+from transformer_lens.hook_points import HookedRootModule
+from typing_extensions import deprecated
 
 
 class InterruptedException(Exception):
@@ -104,6 +100,7 @@ class LanguageModelSAETrainingRunner:
     model: HookedRootModule
     sae: TrainingSAE[Any]
     activations_store: ActivationsStore
+    test_activations_store: ActivationsStore | None
 
     def __init__(
         self,
@@ -112,6 +109,7 @@ class LanguageModelSAETrainingRunner:
         override_model: HookedRootModule | None = None,
         override_sae: TrainingSAE[Any] | None = None,
         resume_from_checkpoint: Path | str | None = None,
+        override_test_dataset: HfDataset | None = None,
     ):
         if override_dataset is not None:
             logger.warning(
@@ -139,6 +137,20 @@ class LanguageModelSAETrainingRunner:
             self.cfg,
             override_dataset=override_dataset,
         )
+
+        # Create test activations store if test_dataset_path is provided
+        self.test_activations_store = None
+        if self.cfg.test_dataset_path is not None or override_test_dataset is not None:
+            # Create a modified config for the test dataset
+            test_cfg = LanguageModelSAERunnerConfig.from_dict(self.cfg.to_dict())
+            if self.cfg.test_dataset_path is not None:
+                test_cfg.dataset_path = self.cfg.test_dataset_path
+            self.test_activations_store = ActivationsStore.from_config(
+                self.model,
+                test_cfg,
+                override_dataset=override_test_dataset,
+            )
+            logger.info(f"Created test activations store from: {self.cfg.test_dataset_path or 'override_test_dataset'}")
 
         if override_sae is None:
             if self.cfg.from_pretrained_path is not None:
@@ -184,6 +196,7 @@ class LanguageModelSAETrainingRunner:
             evaluator=evaluator,
             save_checkpoint_fn=self.save_checkpoint,
             cfg=self.cfg.to_sae_trainer_config(),
+            test_data_provider=self.test_activations_store,
         )
 
         if self.cfg.resume_from_checkpoint is not None:

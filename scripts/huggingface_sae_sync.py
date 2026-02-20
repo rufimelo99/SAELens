@@ -1,7 +1,6 @@
 from collections import defaultdict
 
 from huggingface_hub import HfApi
-
 from sae_lens.loading.pretrained_saes_directory import get_pretrained_saes_directory
 
 

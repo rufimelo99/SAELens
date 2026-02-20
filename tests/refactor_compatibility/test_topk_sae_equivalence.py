@@ -13,12 +13,8 @@ from sae_lens.saes.topk_sae import (
 )
 
 # Old modules
-from tests._comparison.sae_lens_old.sae import (
-    SAE as OldSAE,
-)
-from tests._comparison.sae_lens_old.sae import (
-    SAEConfig as OldSAEConfig,
-)
+from tests._comparison.sae_lens_old.sae import SAE as OldSAE
+from tests._comparison.sae_lens_old.sae import SAEConfig as OldSAEConfig
 from tests._comparison.sae_lens_old.training.training_sae import (
     TrainingSAE as OldTrainingSAE,
 )

@@ -2,15 +2,14 @@
 
 import pytest
 import torch
-from transformer_lens import HookedTransformer
-from transformer_lens.ActivationCache import ActivationCache
-from transformer_lens.hook_points import HookPoint  # Hooking utilities
-from transformer_lens.HookedTransformer import Loss
-
 from sae_lens.analysis.hooked_sae_transformer import HookedSAETransformer, get_deep_attr
 from sae_lens.saes.sae import SAE, SAEMetadata
 from sae_lens.saes.standard_sae import StandardSAE, StandardSAEConfig
 from tests.helpers import assert_close, assert_not_close
+from transformer_lens import HookedTransformer
+from transformer_lens.ActivationCache import ActivationCache
+from transformer_lens.hook_points import HookPoint  # Hooking utilities
+from transformer_lens.HookedTransformer import Loss
 
 MODEL = "solu-1l"
 prompt = "Hello World!"

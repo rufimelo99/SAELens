@@ -7,7 +7,6 @@ from pathlib import Path
 
 import pytest
 import torch
-
 from sae_lens import SAE, ActivationsStore
 from sae_lens.analysis.neuronpedia_integration import open_neuronpedia_feature_dashboard
 from sae_lens.evals import (

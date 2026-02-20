@@ -3,11 +3,10 @@ from typing import Any, Callable
 
 import torch
 import torch.nn as nn
-from typing_extensions import override
-
 from sae_lens.saes.jumprelu_sae import JumpReLUSAEConfig
 from sae_lens.saes.sae import SAEConfig, TrainStepInput, TrainStepOutput
 from sae_lens.saes.topk_sae import TopKTrainingSAE, TopKTrainingSAEConfig
+from typing_extensions import override
 
 
 class BatchTopK(nn.Module):

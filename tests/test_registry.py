@@ -1,5 +1,4 @@
 import pytest
-
 from sae_lens import (
     StandardSAE,
     StandardSAEConfig,

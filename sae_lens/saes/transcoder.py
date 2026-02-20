@@ -2,14 +2,9 @@ from dataclasses import dataclass
 from typing import Any
 
 import torch
-from torch import nn
-
-from sae_lens.saes.sae import (
-    SAE,
-    SAEConfig,
-    SAEMetadata,
-)
+from sae_lens.saes.sae import SAE, SAEConfig, SAEMetadata
 from sae_lens.util import filter_valid_dataclass_fields
+from torch import nn
 
 # pyright: reportIncompatibleVariableOverride=false
 

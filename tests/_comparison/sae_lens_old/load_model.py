@@ -1,6 +1,7 @@
 from typing import Any, Literal, cast
 
 import torch
+from tests._comparison.sae_lens_old import logger
 from transformer_lens import HookedTransformer
 from transformer_lens.hook_points import HookedRootModule, HookPoint
 from transformer_lens.HookedTransformer import Loss, Output
@@ -10,8 +11,6 @@ from transformer_lens.utils import (
     lm_cross_entropy_loss,
 )
 from transformers import AutoModelForCausalLM, AutoTokenizer, PreTrainedTokenizerBase
-
-from tests._comparison.sae_lens_old import logger
 
 
 def load_model(

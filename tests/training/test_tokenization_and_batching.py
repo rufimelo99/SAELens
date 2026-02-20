@@ -2,7 +2,6 @@ from itertools import islice
 
 import pytest
 import torch
-
 from sae_lens.tokenization_and_batching import (
     _add_tokens_to_batch,
     concat_and_batch_sequences,

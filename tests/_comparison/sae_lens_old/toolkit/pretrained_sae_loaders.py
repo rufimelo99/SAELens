@@ -9,7 +9,6 @@ from huggingface_hub import hf_hub_download
 from huggingface_hub.utils import EntryNotFoundError
 from safetensors import safe_open
 from safetensors.torch import load_file
-
 from tests._comparison.sae_lens_old import logger
 from tests._comparison.sae_lens_old.config import (
     DTYPE_MAP,

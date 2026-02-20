@@ -9,12 +9,11 @@ from typing import Literal, cast
 import torch
 from datasets import Dataset, DatasetDict, load_dataset
 from huggingface_hub import HfApi
-from transformers import AutoTokenizer, PreTrainedTokenizerBase
-from typing_extensions import deprecated
-
 from sae_lens import __version__
 from sae_lens.config import PretokenizeRunnerConfig
 from sae_lens.tokenization_and_batching import concat_and_batch_sequences
+from transformers import AutoTokenizer, PreTrainedTokenizerBase
+from typing_extensions import deprecated
 
 
 @dataclass

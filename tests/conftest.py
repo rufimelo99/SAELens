@@ -8,7 +8,6 @@ from typing import Any
 import numpy as np
 import pytest
 import torch
-
 from sae_lens.saes.sae import SAE
 from sae_lens.saes.standard_sae import StandardSAEConfig
 from tests.helpers import TINYSTORIES_MODEL, load_model_cached

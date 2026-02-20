@@ -5,13 +5,10 @@ from typing import Any, Callable
 import torch
 import torch._inductor.config
 import triton  # type: ignore
-from tabulate import tabulate
-
 from sae_lens.saes.sae import TrainStepInput
 from sae_lens.saes.topk_sae import TopKTrainingSAE
-from tests.helpers import (
-    build_topk_sae_training_cfg,
-)
+from tabulate import tabulate
+from tests.helpers import build_topk_sae_training_cfg
 
 torch._inductor.config.coordinate_descent_tuning = True
 

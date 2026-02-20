@@ -3,10 +3,6 @@ from typing import Any, Protocol, cast
 
 import torch
 import wandb
-from torch.optim import Adam
-from tqdm import tqdm
-from transformer_lens.hook_points import HookedRootModule
-
 from tests._comparison.sae_lens_old import __version__
 from tests._comparison.sae_lens_old.config import LanguageModelSAERunnerConfig
 from tests._comparison.sae_lens_old.evals import EvalConfig, run_evals
@@ -16,6 +12,9 @@ from tests._comparison.sae_lens_old.training.training_sae import (
     TrainingSAE,
     TrainStepOutput,
 )
+from torch.optim import Adam
+from tqdm import tqdm
+from transformer_lens.hook_points import HookedRootModule
 
 # used to map between parameters which are updated during finetuning and the config str.
 FINETUNING_PARAMETERS = {

@@ -4,11 +4,10 @@ from pathlib import Path
 import numpy as np
 import pytest
 import torch
-from sparsify import SparseCoder, SparseCoderConfig
-
 from sae_lens.registry import get_sae_class, get_sae_training_class
 from sae_lens.saes.sae import SAE, TrainStepInput
 from sae_lens.saes.topk_sae import TopK, TopKSAE, TopKTrainingSAE
+from sparsify import SparseCoder, SparseCoderConfig
 from tests.helpers import (
     assert_close,
     assert_not_close,

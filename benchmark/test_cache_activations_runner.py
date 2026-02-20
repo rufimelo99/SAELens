@@ -5,12 +5,11 @@ import time
 from pathlib import Path
 
 import torch
-from safetensors.torch import save_file
-from tqdm import trange
-
 from sae_lens.cache_activations_runner import CacheActivationsRunner
 from sae_lens.config import CacheActivationsRunnerConfig
 from sae_lens.constants import DTYPE_MAP
+from safetensors.torch import save_file
+from tqdm import trange
 
 os.environ["WANDB_MODE"] = "offline"  # turn this off if you want to see the output
 

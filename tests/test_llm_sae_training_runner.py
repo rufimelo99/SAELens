@@ -4,8 +4,6 @@ from typing import Any
 
 import pytest
 import torch
-from transformer_lens import HookedTransformer
-
 from sae_lens import __version__
 from sae_lens.config import LanguageModelSAERunnerConfig
 from sae_lens.constants import (
@@ -32,6 +30,7 @@ from tests.helpers import (
     TINYSTORIES_MODEL,
     build_runner_cfg_for_arch,
 )
+from transformer_lens import HookedTransformer
 
 
 @pytest.mark.parametrize("architecture", ALL_TRAINING_ARCHITECTURES)

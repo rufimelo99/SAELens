@@ -3,8 +3,6 @@ from pathlib import Path
 
 import pytest
 import torch
-from torch import nn
-
 from sae_lens.saes.jumprelu_sae import (
     JumpReLU,
     JumpReLUSAE,
@@ -18,6 +16,7 @@ from tests.helpers import (
     build_jumprelu_sae_cfg,
     build_jumprelu_sae_training_cfg,
 )
+from torch import nn
 
 
 def test_JumpReLUTrainingSAE_encoding():

@@ -2,13 +2,12 @@
 import einops
 import pytest
 import torch
-from transformer_lens import HookedTransformer
-from transformer_lens.hook_points import HookPoint
-
 from sae_lens import HookedSAETransformer
 from sae_lens.saes.sae import SAE, SAEMetadata
 from sae_lens.saes.standard_sae import StandardSAE, StandardSAEConfig
 from tests.helpers import assert_close
+from transformer_lens import HookedTransformer
+from transformer_lens.hook_points import HookPoint
 
 MODEL = "solu-1l"
 prompt = "Hello World!"

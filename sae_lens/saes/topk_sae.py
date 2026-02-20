@@ -4,10 +4,6 @@ from dataclasses import dataclass
 from typing import Any, Callable
 
 import torch
-from torch import nn
-from transformer_lens.hook_points import HookPoint
-from typing_extensions import override
-
 from sae_lens.saes.sae import (
     SAE,
     SAEConfig,
@@ -17,6 +13,9 @@ from sae_lens.saes.sae import (
     TrainStepInput,
     _disable_hooks,
 )
+from torch import nn
+from transformer_lens.hook_points import HookPoint
+from typing_extensions import override
 
 
 class SparseHookPoint(HookPoint):

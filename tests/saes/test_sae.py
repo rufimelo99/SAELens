@@ -7,7 +7,6 @@ from unittest.mock import patch
 
 import pytest
 import torch
-
 from sae_lens import __version__
 from sae_lens.registry import get_sae_class, get_sae_training_class
 from sae_lens.saes.sae import (

@@ -11,8 +11,6 @@ import yaml
 from huggingface_hub import hf_hub_download, hf_hub_url
 from huggingface_hub.utils import EntryNotFoundError, build_hf_headers
 from packaging.version import Version
-from safetensors import safe_open
-
 from sae_lens import logger
 from sae_lens.constants import (
     SAE_CFG_FILENAME,
@@ -27,6 +25,7 @@ from sae_lens.loading.pretrained_saes_directory import (
 )
 from sae_lens.registry import get_sae_class
 from sae_lens.util import filter_valid_dataclass_fields, str_to_dtype
+from safetensors import safe_open
 
 LLM_METADATA_KEYS = {
     "model_name",

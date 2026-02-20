@@ -3,7 +3,6 @@ from pathlib import Path
 
 import pytest
 import torch
-
 from sae_lens.saes.matching_pursuit_sae import (
     MatchingPursuitSAE,
     MatchingPursuitTrainingSAE,

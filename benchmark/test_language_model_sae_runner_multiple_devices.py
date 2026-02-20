@@ -1,5 +1,4 @@
 import torch
-
 from sae_lens.config import LanguageModelSAERunnerConfig
 from sae_lens.llm_sae_training_runner import LanguageModelSAETrainingRunner
 

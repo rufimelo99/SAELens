@@ -1,7 +1,6 @@
 import os
 
 import torch
-
 from sae_lens import (
     SAE,
     HookedSAETransformer,

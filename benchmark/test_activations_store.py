@@ -2,12 +2,11 @@ from time import perf_counter
 from typing import Any, cast
 
 from datasets import load_dataset
-from transformer_lens import HookedTransformer
-
 from sae_lens.config import PretokenizeRunnerConfig
 from sae_lens.pretokenize_runner import pretokenize_dataset
 from sae_lens.training.activations_store import ActivationsStore
 from tests.helpers import build_runner_cfg
+from transformer_lens import HookedTransformer
 
 
 # The way to run this with this command:

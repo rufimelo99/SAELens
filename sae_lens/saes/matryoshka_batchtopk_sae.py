@@ -2,14 +2,10 @@ import warnings
 from dataclasses import dataclass, field
 
 import torch
-from typing_extensions import override
-
-from sae_lens.saes.batchtopk_sae import (
-    BatchTopKTrainingSAE,
-    BatchTopKTrainingSAEConfig,
-)
+from sae_lens.saes.batchtopk_sae import BatchTopKTrainingSAE, BatchTopKTrainingSAEConfig
 from sae_lens.saes.sae import TrainStepInput, TrainStepOutput
 from sae_lens.saes.topk_sae import _sparse_matmul_nd
+from typing_extensions import override
 
 
 @dataclass
