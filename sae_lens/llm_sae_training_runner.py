@@ -138,19 +138,17 @@ class LanguageModelSAETrainingRunner:
             override_dataset=override_dataset,
         )
 
-        # Create test activations store if test_dataset_path is provided
+        # Create test activations store if test_dataset_split is provided
         self.test_activations_store = None
-        if self.cfg.test_dataset_path is not None or override_test_dataset is not None:
-            # Create a modified config for the test dataset
-            test_cfg = LanguageModelSAERunnerConfig.from_dict(self.cfg.to_dict())
-            if self.cfg.test_dataset_path is not None:
-                test_cfg.dataset_path = self.cfg.test_dataset_path
+        if self.cfg.test_dataset_split is not None or override_test_dataset is not None:
+            test_split = self.cfg.test_dataset_split or "test"
             self.test_activations_store = ActivationsStore.from_config(
                 self.model,
-                test_cfg,
+                self.cfg,
                 override_dataset=override_test_dataset,
+                dataset_split=test_split,
             )
-            logger.info(f"Created test activations store from: {self.cfg.test_dataset_path or 'override_test_dataset'}")
+            logger.info(f"Created test activations store from split: {test_split}")
 
         if override_sae is None:
             if self.cfg.from_pretrained_path is not None:

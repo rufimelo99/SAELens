@@ -94,6 +94,7 @@ class ActivationsStore:
         cfg: LanguageModelSAERunnerConfig[T_TRAINING_SAE_CONFIG]
         | CacheActivationsRunnerConfig,
         override_dataset: HfDataset | None = None,
+        dataset_split: str = "train",
     ) -> ActivationsStore:
         if isinstance(cfg, CacheActivationsRunnerConfig):
             return cls.from_cache_activations(model, cfg)
@@ -147,6 +148,7 @@ class ActivationsStore:
             exclude_special_tokens=exclude_special_tokens,
             disable_concat_sequences=cfg.disable_concat_sequences,
             sequence_separator_token=cfg.sequence_separator_token,
+            dataset_split=dataset_split,
         )
 
     @classmethod
@@ -221,6 +223,7 @@ class ActivationsStore:
         exclude_special_tokens: torch.Tensor | None = None,
         disable_concat_sequences: bool = False,
         sequence_separator_token: int | Literal["bos", "eos", "sep"] | None = "bos",
+        dataset_split: str = "train",
     ):
         self.model = model
         if model_kwargs is None:
@@ -229,7 +232,7 @@ class ActivationsStore:
         self.dataset = (
             load_dataset(
                 dataset,
-                split="train",
+                split=dataset_split,
                 streaming=streaming,  # type: ignore
                 trust_remote_code=dataset_trust_remote_code,  # type: ignore
             )

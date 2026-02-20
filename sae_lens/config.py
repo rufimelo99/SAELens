@@ -261,7 +261,7 @@ class LanguageModelSAERunnerConfig(Generic[T_TRAINING_SAE_CONFIG]):
     eval_batch_size_prompts: int | None = None  # useful if evals cause OOM
 
     # Test set evaluation
-    test_dataset_path: str | None = None  # Path to test dataset for tracking test loss
+    test_dataset_split: str | None = None  # Split name for test dataset (e.g., "test"). If None, no test evaluation.
     test_eval_every_n_steps: int = 100  # How often to compute test loss (in training steps)
 
     logger: LoggingConfig = field(default_factory=LoggingConfig)
